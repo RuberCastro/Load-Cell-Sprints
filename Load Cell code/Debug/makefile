@@ -64,8 +64,8 @@ all: main-build
 main-build: Sprint3_LoadCell.elf secondary-outputs
 
 # Tool invocations
-Sprint3_LoadCell.elf Sprint3_LoadCell.map: $(OBJS) $(USER_OBJS) C:\Users\hudso\STM32CubeIDE\workspace_2.2.0\Sprint3_LoadCell\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Sprint3_LoadCell.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\hudso\STM32CubeIDE\workspace_2.2.0\Sprint3_LoadCell\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Sprint3_LoadCell.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Sprint3_LoadCell.elf Sprint3_LoadCell.map: $(OBJS) $(USER_OBJS) C:\Users\ruber\Downloads\Load-Cell-Sprints-main\Load-Cell-Sprints-main\Load\ Cell\ code\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Sprint3_LoadCell.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\ruber\Downloads\Load-Cell-Sprints-main\Load-Cell-Sprints-main\Load Cell code\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Sprint3_LoadCell.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

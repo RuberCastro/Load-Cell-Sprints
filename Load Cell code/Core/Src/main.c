@@ -50,6 +50,8 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+TIM_HandleTypeDef htim3;
+
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
@@ -80,13 +82,15 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 void sendmessageTask(void *argument);
 void LoadCellTask(void *argument);
-void traceTaskSwitch(void);
 void MonitorTask(void *argument);
+void actuatorTask(void *argument);
+void traceTaskSwitch(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -150,6 +154,16 @@ int main(void)
       NULL
   );
 
+  xTaskCreate(
+		actuatorTask,
+        "actuatorTask",
+        256,
+        NULL,
+        1,
+        NULL
+    );
+
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -163,6 +177,7 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   if (NAU7802_Init() != HAL_OK)
   {
@@ -312,6 +327,55 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
 
 }
 
@@ -600,6 +664,79 @@ void MonitorTask(void *argument)
         }
 
         vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
+void actuatorTask(void *argument)
+{
+    uint32_t frequency = 0;
+    uint32_t ARR;
+    short int previous_status = -1;
+
+    // Start PWM with output OFF
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+
+    if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    for (;;)
+    {
+        short int status = weight_status;
+
+        // Update PWM only when weight status changes
+        if (status != previous_status)
+        {
+            switch (status)
+            {
+                case 0:
+                    // Normal weight - Buzzer OFF
+                    frequency = 0;
+                    break;
+
+                case 1:
+                    // Running Low - Lower pitch
+                    frequency = 1000;
+                    break;
+
+                case 2:
+                    // Ran Out - High pitch, near maximum loudness
+                    frequency = 3200;
+                    break;
+
+                default:
+                    // Invalid status - Buzzer OFF
+                    frequency = 0;
+                    break;
+            }
+
+            if (frequency > 0)
+            {
+                // TIM3 clock = 80 MHz, Prescaler = 0
+                ARR = (80000000UL / frequency) - 1UL;
+
+                // Temporarily disable PWM pulses
+                __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+
+                // Update PWM frequency
+                __HAL_TIM_SET_COUNTER(&htim3, 0);
+                __HAL_TIM_SET_AUTORELOAD(&htim3, ARR);
+
+                // Set 50% duty cycle
+                __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2,
+                                      (ARR + 1UL) / 2UL);
+            }
+            else
+            {
+                // Buzzer OFF
+                __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+            }
+
+            previous_status = status;
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
