@@ -1,0 +1,4 @@
+../Core/Src/nau7802.c:16:19:NAU7802_WriteReg	1
+../Core/Src/nau7802.c:29:19:NAU7802_ReadReg	1
+../Core/Src/nau7802.c:42:19:NAU7802_Init	11
+../Core/Src/nau7802.c:130:19:NAU7802_ReadRaw	8
