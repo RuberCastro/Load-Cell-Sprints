@@ -27,6 +27,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include <string.h>
+#include "queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,13 +68,26 @@ int32_t tare;
 char uartBuffer[50];
 int32_t zeroReading;
 float calibrationFactor = 789.950980;
-volatile float weight_grams;
+struct weight_grams{
+	float weight;
+	};
+struct weight_grams W;
+struct uart_output{
+	float weight_read;
+	};
+struct uart_output UART;
+struct weight_level{
+	int level;
+	};
+struct weight_level lvl;
 volatile float prev_weight = 9999;
 volatile float monitoring_weight;
-volatile short int weight_status;
 volatile char currentTaskName[configMAX_TASK_NAME_LEN];
 volatile uint8_t taskNameUpdated = 0;
 BaseType_t result;
+QueueHandle_t weight_queue;
+QueueHandle_t uart_queue;
+QueueHandle_t status_queue;
 
 /* USER CODE END PV */
 
@@ -90,24 +104,11 @@ void sendmessageTask(void *argument);
 void LoadCellTask(void *argument);
 void MonitorTask(void *argument);
 void actuatorTask(void *argument);
-void traceTaskSwitch(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void traceTaskSwitch(void)
-{
 
-    const char *name = pcTaskGetName(NULL);
-
-    strncpy((char *)currentTaskName,
-            name,
-            configMAX_TASK_NAME_LEN);
-
-    currentTaskName[configMAX_TASK_NAME_LEN - 1] = '\0';
-
-    taskNameUpdated = 1;
-}
 /* USER CODE END 0 */
 
 /**
@@ -203,6 +204,9 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  weight_queue = xQueueCreate(4, sizeof(struct weight_grams));
+  uart_queue = xQueueCreate(4, sizeof(struct uart_output));
+  status_queue = xQueueCreate(4, sizeof(struct weight_level));
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -464,98 +468,93 @@ void sendmessageTask(void *argument)
 {
     char uartBuffer[100];
 
+    struct uart_output recieved_weight;
+
+    struct weight_level recieved_status;
 
     TickType_t lastUartTime = xTaskGetTickCount();
+    GPIO_PinState currentState =
+        HAL_GPIO_ReadPin(Monitor_Start_GPIO_Port,
+                         Monitor_Start_Pin);
 
     for (;;)
     {
+    	if(xQueueReceive(status_queue, &recieved_status, pdMS_TO_TICKS(400)) == pdPASS){
 
-        if ((xTaskGetTickCount() - lastUartTime) >=
-            pdMS_TO_TICKS(100) && (weight_grams != prev_weight)) //Confirm Time between sends is appropriate
-        														//and weight actually changed
-        {
-            int len;
+    		int weight_status = recieved_status.level;
 
-            switch (weight_status)
-            {
-                case 0:
-                    len = snprintf(
-                        uartBuffer,
-                        sizeof(uartBuffer),
-                        "Weight: %.3f g | MonitorW: %.3f g | Button: %d\r\n",
-                        weight_grams,
-                        monitoring_weight,
-                        weight_status
-                    );
-                    break;
+			if(xQueueReceive(uart_queue, &recieved_weight, pdMS_TO_TICKS(400)) == pdPASS){
 
+				float weight_to_print = recieved_weight.weight_read;
 
-                case 1:
-                    len = snprintf(
-                        uartBuffer,
-                        sizeof(uartBuffer),
-                        "Weight: %.3f g - RUNNING LOW\r\n",
-                        weight_grams
-                    );
-                    break;
+				if ((xTaskGetTickCount() - lastUartTime) >=
+					pdMS_TO_TICKS(100) && (weight_to_print != prev_weight)) //Confirm Time between sends is appropriate
+																		//and weight actually changed
+				{
+					int len;
+
+					switch (weight_status)
+					{
+						case 0:
+							len = snprintf(
+								uartBuffer,
+								sizeof(uartBuffer),
+								"Weight: %.3f g | MonitorW: %.3f g | Button: %d\r\n",
+								weight_to_print,
+								monitoring_weight,
+								currentState
+							);
+							break;
 
 
-                case 2:
-                    len = snprintf(
-                        uartBuffer,
-                        sizeof(uartBuffer),
-                        "Weight: %.3f g - RAN OUT\r\n",
-                        weight_grams
-                    );
-                    break;
+						case 1:
+							len = snprintf(
+								uartBuffer,
+								sizeof(uartBuffer),
+								"Weight: %.3f g - RUNNING LOW\r\n",
+								weight_to_print
+							);
+							break;
 
 
-                default:
-                    len = snprintf(
-                        uartBuffer,
-                        sizeof(uartBuffer),
-                        "Weight status error\r\n"
-                    );
-                    break;
-            }
+						case 2:
+							len = snprintf(
+								uartBuffer,
+								sizeof(uartBuffer),
+								"Weight: %.3f g - RAN OUT\r\n",
+								weight_to_print
+							);
+							break;
 
 
-            HAL_UART_Transmit(
-                &huart2,
-                (uint8_t *)uartBuffer,
-                len,
-                HAL_MAX_DELAY
-            );
-
-            lastUartTime = xTaskGetTickCount();
-        }
-
-        //Store current weight as previous weight after printing
-        prev_weight = weight_grams;
-
-        if (taskNameUpdated)
-        {
-            taskNameUpdated = 0;
-
-            int len = snprintf(
-                uartBuffer,
-                sizeof(uartBuffer),
-                "Current task: %s\r\n",
-                currentTaskName
-            );
-
-            HAL_UART_Transmit(
-                &huart2,
-                (uint8_t *)uartBuffer,
-                len,
-                HAL_MAX_DELAY
-            );
-        }
+						default:
+							len = snprintf(
+								uartBuffer,
+								sizeof(uartBuffer),
+								"Weight status error\r\n"
+							);
+							break;
+					}
 
 
-        /* Check monitoring/button every 20 ms */
-        vTaskDelay(pdMS_TO_TICKS(20));
+					HAL_UART_Transmit(
+						&huart2,
+						(uint8_t *)uartBuffer,
+						len,
+						HAL_MAX_DELAY
+					);
 
+					lastUartTime = xTaskGetTickCount();
+				}
+
+				//Store current weight as previous weight after printing
+				prev_weight = weight_to_print;
+
+				/* Check monitoring/button every 20 ms */
+				vTaskDelay(pdMS_TO_TICKS(20));
+
+			}
+		}
 
     }
 }
@@ -564,7 +563,11 @@ void LoadCellTask(void *argument)
 {
     for (;;)
     {
-        // Read load cell
+        GPIO_PinState currentState =
+            HAL_GPIO_ReadPin(Monitor_Start_GPIO_Port,
+                             Monitor_Start_Pin);
+
+    	// Read load cell
         if (NAU7802_ReadRaw(&rawValue) == HAL_OK)
         {
             // Tare when button is pressed
@@ -577,139 +580,118 @@ void LoadCellTask(void *argument)
             zeroReading = rawValue - tare;
 
             // Convert ADC counts to grams
-            weight_grams = zeroReading / calibrationFactor;
+            W.weight = zeroReading / calibrationFactor;
+
+            if (currentState == GPIO_PIN_SET)
+            	{
+                	// Save starting/reference weight
+                	monitoring_weight = W.weight;
+            	}
+            	vTaskDelay(pdMS_TO_TICKS(500));
+
+            if(xQueueSend(weight_queue, &W, pdMS_TO_TICKS(300) != pdPASS) &&
+            xQueueSend(uart_queue, &W, pdMS_TO_TICKS(300)) != pdPASS){
+
+            	int send = snprintf(uartBuffer, sizeof(uartBuffer),"Queue send failed");
+
+            	HAL_UART_Transmit(&huart2, (uint8_t *)uartBuffer, send,HAL_MAX_DELAY);
+            }
 
         }
-        if (taskNameUpdated)
-        {
-            taskNameUpdated = 0;
-
-            int len = snprintf(
-                uartBuffer,
-                sizeof(uartBuffer),
-                "Current task: %s\r\n",
-                currentTaskName
-            );
-
-            HAL_UART_Transmit(
-                &huart2,
-                (uint8_t *)uartBuffer,
-                len,
-                HAL_MAX_DELAY
-            );
-        }
-        vTaskDelay(pdMS_TO_TICKS(200));
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 
 
 void MonitorTask(void *argument)
 {
-    char uartBuffer[50];
+    struct weight_grams recieved_weight;
 
     for (;;)
     {
+    	if(xQueueReceive(weight_queue, &recieved_weight,  pdMS_TO_TICKS(300)) == pdPASS){
 
-        GPIO_PinState currentState =
-            HAL_GPIO_ReadPin(Monitor_Start_GPIO_Port,
-                             Monitor_Start_Pin);
+    		float weight_in = recieved_weight.weight;
 
-        if (currentState == GPIO_PIN_SET)
-        {
-            // Save starting/reference weight
-            monitoring_weight = weight_grams;
-        }
+			if (monitoring_weight > 0.0f)
+			{
+				// Less than 10% remaining
+				if (weight_in < monitoring_weight * 0.10f)
+				{
+					lvl.level = 2;
+				}
+
+				// Less than 20% remaining
+				else if (weight_in < monitoring_weight * 0.20f)
+				{
+					lvl.level = 1;
+				}
+				else
+				{
+					lvl.level = 0;
+				}
+			}
+			else
+			{
+				lvl.level = 0;
+			}
+
+			xQueueSend(status_queue, &lvl, pdMS_TO_TICKS(300));
 
 
-        if (monitoring_weight > 0.0f)
-        {
-            // Less than 10% remaining
-            if (weight_grams < monitoring_weight * 0.10f)
-            {
-                weight_status = 2;
-            }
-
-            // Less than 20% remaining
-            else if (weight_grams < monitoring_weight * 0.20f)
-            {
-                weight_status = 1;
-            }
-            else
-            {
-                weight_status = 0;
-            }
-        }
-        else
-        {
-            weight_status = 0;
-        }
-
-        if (taskNameUpdated)
-        {
-            taskNameUpdated = 0;
-
-            int len = snprintf(
-                uartBuffer,
-                sizeof(uartBuffer),
-                "Current task: %s\r\n",
-                currentTaskName
-            );
-
-            HAL_UART_Transmit(
-                &huart2,
-                (uint8_t *)uartBuffer,
-                len,
-                HAL_MAX_DELAY
-            );
-        }
-
-        vTaskDelay(pdMS_TO_TICKS(500));
+		}
+    	vTaskDelay(pdMS_TO_TICKS(500));
     }
-}
 
+}
 void actuatorTask(void *argument)
 {
     uint32_t frequency = 0;
     uint32_t ARR;
     short int previous_status = -1;
+    struct weight_level recieved_level;
 
     // Start PWM with output OFF
-    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+        __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
 
-    if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    for (;;)
-    {
-        short int status = weight_status;
-
-        // Update PWM only when weight status changes
-        if (status != previous_status)
+        if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2) != HAL_OK)
         {
-            switch (status)
-            {
-                case 0:
-                    // Normal weight - Buzzer OFF
-                    frequency = 0;
-                    break;
+            Error_Handler();
+        }
 
-                case 1:
-                    // Running Low - Lower pitch
-                    frequency = 1000;
-                    break;
 
-                case 2:
-                    // Ran Out - High pitch, near maximum loudness
-                    frequency = 3200;
-                    break;
+    if(xQueueReceive(status_queue, &recieved_level,  pdMS_TO_TICKS(300)) == pdPASS)
+    {
 
-                default:
-                    // Invalid status - Buzzer OFF
-                    frequency = 0;
-                    break;
-            }
+    	for (;;)
+    	{
+    		short int status = recieved_level.level;
+
+    		// Update PWM only when weight status changes
+    		if (status != previous_status)
+    		{
+    			switch (status)
+    			{
+                	case 0:
+                		// Normal weight - Buzzer OFF
+                		frequency = 0;
+                		break ;
+
+					case 1:
+						// Running Low - Lower pitch
+						frequency = 1000;
+						break;
+
+					case 2:
+						// Ran Out - High pitch, near maximum loudness
+						frequency = 3200;
+						break;
+
+					default:
+						// Invalid status - Buzzer OFF
+						frequency = 0;
+						break;
+				}
 
             if (frequency > 0)
             {
@@ -734,9 +716,11 @@ void actuatorTask(void *argument)
             }
 
             previous_status = status;
-        }
+    		}
 
         vTaskDelay(pdMS_TO_TICKS(100));
+    	}
+
     }
 }
 
@@ -796,6 +780,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
 #ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
