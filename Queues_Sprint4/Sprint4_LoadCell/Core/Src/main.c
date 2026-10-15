@@ -51,6 +51,8 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
+TIM_HandleTypeDef htim3;
+
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
@@ -77,6 +79,9 @@ struct uart_output UART;
 struct weight_level{
 	int level;
 	};
+struct status_level{
+	int lvl;
+	};
 struct weight_level lvl;
 volatile float prev_weight = 9999;
 volatile float monitoring_weight;
@@ -86,6 +91,7 @@ BaseType_t result;
 QueueHandle_t weight_queue;
 QueueHandle_t uart_queue;
 QueueHandle_t status_queue;
+QueueHandle_t level_queue;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,9 +99,11 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
+void MessageTask(void *argument);
 void ActuatorTask(void *argument);
 void SensorTask(void *argument);
 void ControlTask(void *argument);
@@ -138,6 +146,7 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART2_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   if (NAU7802_Init() != HAL_OK)
   {
@@ -166,6 +175,7 @@ int main(void)
   weight_queue = xQueueCreate(4, sizeof(struct weight_grams));
   uart_queue = xQueueCreate(4, sizeof(struct uart_output));
   status_queue = xQueueCreate(4, sizeof(struct weight_level));
+  level_queue = xQueueCreate(4, sizeof(struct status_level));
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -200,6 +210,15 @@ int main(void)
        1,
        NULL
    );
+
+   xTaskCreate(
+		   MessageTask,
+          "MessageTask",
+          256,
+          NULL,
+          1,
+          NULL
+      );
 
   /* USER CODE END RTOS_THREADS */
 
@@ -321,6 +340,55 @@ static void MX_I2C1_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -401,7 +469,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void ActuatorTask(void *argument)
+void MessageTask(void *argument)
 {
     char uartBuffer[100];
 
@@ -543,6 +611,7 @@ void SensorTask(void *argument)
 void ControlTask(void *argument)
 {
     struct weight_grams recieved_weight;
+    struct status_level sent_lvl;
     for (;;)
     {
     	if(xQueueReceive(weight_queue, &recieved_weight,  pdMS_TO_TICKS(300)) == pdPASS){
@@ -555,30 +624,111 @@ void ControlTask(void *argument)
 				if (weight_in < monitoring_weight * 0.10f)
 				{
 					lvl.level = 2;
+					sent_lvl.lvl=2;
 				}
 
 				// Less than 20% remaining
 				else if (weight_in < monitoring_weight * 0.20f)
 				{
 					lvl.level = 1;
+					sent_lvl.lvl=1;
 				}
 				else
 				{
 					lvl.level = 0;
+					sent_lvl.lvl=0;
 				}
 			}
 			else
 			{
 				lvl.level = 0;
+				sent_lvl.lvl=0;
 			}
 
 			xQueueSend(status_queue, &lvl, pdMS_TO_TICKS(300));
+			xQueueSend(level_queue, &sent_lvl, pdMS_TO_TICKS(300));
+
 
 
 		}
     	vTaskDelay(pdMS_TO_TICKS(500));
     }
 
+}
+
+void ActuatorTask(void *argument)
+{
+    uint32_t frequency = 0;
+    uint32_t ARR;
+    short int previous_status = -1;
+    struct status_level recieved_level;
+
+    // Start PWM with output OFF
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+
+    if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    for (;;)
+    {
+        // Receive updated status continuously
+        if (xQueueReceive(level_queue,
+                          &recieved_level,
+                          portMAX_DELAY) == pdPASS)
+        {
+            short int status = recieved_level.lvl;
+
+            if (status != previous_status)
+            {
+                switch (status)
+                {
+                    case 0:
+                        frequency = 0;
+                        break;
+
+                    case 1:
+                        frequency = 1000;
+                        break;
+
+                    case 2:
+                        frequency = 3200;
+                        break;
+
+                    default:
+                        frequency = 0;
+                        break;
+                }
+
+                if (frequency > 0)
+                {
+                    ARR = (80000000UL / frequency) - 1UL;
+
+                    __HAL_TIM_SET_COMPARE(
+                        &htim3, TIM_CHANNEL_2, 0);
+
+                    __HAL_TIM_SET_COUNTER(&htim3, 0);
+
+                    __HAL_TIM_SET_AUTORELOAD(
+                        &htim3, ARR);
+
+                    __HAL_TIM_SET_COMPARE(
+                        &htim3,
+                        TIM_CHANNEL_2,
+                        (ARR + 1UL) / 2UL);
+                }
+                else
+                {
+                    __HAL_TIM_SET_COMPARE(
+                        &htim3, TIM_CHANNEL_2, 0);
+                }
+
+                previous_status = status;
+            }
+        }
+        vTaskDelay(pdMS_TO_TICKS(200));
+    }
 }
 
 /* USER CODE END 4 */

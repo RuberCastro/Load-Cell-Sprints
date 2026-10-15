@@ -499,7 +499,7 @@ void sendmessageTask(void *argument)
 							len = snprintf(
 								uartBuffer,
 								sizeof(uartBuffer),
-								"Weight: %.3f g | MonitorW: %.3f g | Button: %d\r\n",
+								"Weight: %.3f g | MonitorW: %.3f g | MButton: %d\r\n",
 								weight_to_print,
 								monitoring_weight,
 								currentState
@@ -658,7 +658,6 @@ void actuatorTask(void *argument)
         {
             Error_Handler();
         }
-
 
     if(xQueueReceive(status_queue, &recieved_level,  pdMS_TO_TICKS(300)) == pdPASS)
     {
