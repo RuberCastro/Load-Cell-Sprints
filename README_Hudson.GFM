@@ -30,4 +30,4 @@ o	STM32CubeIDE – After the tasks were configured and the corresponding code wa
 Again using the HAL library to do this, with each task to execute the same function (‘Toggle Pin’). **Observation** Changing priorities of the tasks create a different pattern of blinking because of the timing and 
 frequency each task is called. 
 
-![image alt](https://github.com/RuberCastro/Load-Cell-Sprints/blob/0112b14fe4adadec4d8e1e0d647fc2ae50912ead/images/Figure1.png)
+![image](https://github.com/RuberCastro/Load-Cell-Sprints/blob/main/images/Figure1.png)
