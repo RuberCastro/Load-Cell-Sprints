@@ -12,6 +12,7 @@
 extern I2C_HandleTypeDef hi2c1;
 
 
+
 // Write one byte to an NAU7802 register
 HAL_StatusTypeDef NAU7802_WriteReg(uint8_t reg, uint8_t value)
 {

@@ -38,34 +38,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Sprint4_LoadCell
+BUILD_ARTIFACT_NAME := Sprint5_Loadcell
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Sprint4_LoadCell.elf \
+Sprint5_Loadcell.elf \
 
 MAP_FILES += \
-Sprint4_LoadCell.map \
+Sprint5_Loadcell.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Sprint4_LoadCell.list \
+Sprint5_Loadcell.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Sprint4_LoadCell.elf secondary-outputs
+main-build: Sprint5_Loadcell.elf secondary-outputs
 
 # Tool invocations
-Sprint4_LoadCell.elf Sprint4_LoadCell.map: $(OBJS) $(USER_OBJS) C:\Users\ruber\OneDrive\Documentos\GitHub\Load-Cell-Sprints\Queues_Sprint4\Sprint4_LoadCell\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Sprint4_LoadCell.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\ruber\OneDrive\Documentos\GitHub\Load-Cell-Sprints\Queues_Sprint4\Sprint4_LoadCell\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Sprint4_LoadCell.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+Sprint5_Loadcell.elf Sprint5_Loadcell.map: $(OBJS) $(USER_OBJS) C:\Users\ruber\OneDrive\Documentos\GitHub\Load-Cell-Sprints\Sprint5_Loadcell\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Sprint5_Loadcell.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\ruber\OneDrive\Documentos\GitHub\Load-Cell-Sprints\Sprint5_Loadcell\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Sprint5_Loadcell.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -74,14 +74,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Sprint4_LoadCell.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Sprint4_LoadCell.list"
+Sprint5_Loadcell.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Sprint5_Loadcell.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) Sprint4_LoadCell.elf Sprint4_LoadCell.list Sprint4_LoadCell.map default.size.stdout
+	-$(RM) Sprint5_Loadcell.elf Sprint5_Loadcell.list Sprint5_Loadcell.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
