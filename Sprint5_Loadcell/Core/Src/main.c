@@ -37,7 +37,6 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "main.h"
-
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -45,17 +44,11 @@
 /* USER CODE BEGIN Includes */
 
 #include <stdio.h>
-
 #include "nau7802.h"
-
 #include "FreeRTOS.h"
-
 #include "task.h"
-
 #include <string.h>
-
 #include "queue.h"
-
 #include "semphr.h"
 
 /* USER CODE END Includes */
@@ -85,9 +78,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 I2C_HandleTypeDef hi2c1;
-
 TIM_HandleTypeDef htim3;
-
 UART_HandleTypeDef huart2;
 
 /* Definitions for defaultTask */
@@ -95,11 +86,8 @@ UART_HandleTypeDef huart2;
 osThreadId_t defaultTaskHandle;
 
 const osThreadAttr_t defaultTask_attributes = {
-
   .name = "defaultTask",
-
   .stack_size = 128 * 4,
-
   .priority = (osPriority_t) osPriorityNormal,
 
 };
@@ -107,21 +95,13 @@ const osThreadAttr_t defaultTask_attributes = {
 /* USER CODE BEGIN PV */
 
 int32_t rawValue;
-
 int32_t tare;
-
 char uartBuffer[50];
-
 int32_t zeroReading;
-
 float calibrationFactor = 789.950980;
-
 struct weight_grams{
-
 	float weight;
-
 	};
-
 struct weight_grams W;
 
 /* Sprint 5: log entries are copied into this queue (not just a float). */
@@ -131,27 +111,17 @@ typedef struct {
 } LogMessage_t;
 
 struct weight_level{
-
 	int level;
-
 	};
 
 struct weight_level lvl;
-
 volatile float prev_weight = 9999;
-
 volatile float monitoring_weight;
-
 volatile char currentTaskName[configMAX_TASK_NAME_LEN];
-
 volatile uint8_t taskNameUpdated = 0;
-
 BaseType_t result;
-
 QueueHandle_t weight_queue;
-
 QueueHandle_t status_queue;
-
 QueueHandle_t LogQueue;
 SemaphoreHandle_t LogSemaphore;
 SemaphoreHandle_t logMutex;
@@ -299,8 +269,8 @@ int main(void)
 
   /* Native FreeRTOS tasks, created before osKernelStart(). */
   if (xTaskCreate(LoggingTask, "LoggingTask", 256, NULL, 1, NULL) != pdPASS ||
-      xTaskCreate(LoadCellTask, "LoadCellTask", 256, NULL, 2, NULL) != pdPASS ||
-      xTaskCreate(MonitorTask, "MonitorTask", 256, NULL, 2, NULL) != pdPASS ||
+      xTaskCreate(LoadCellTask, "LoadCellTask", 256, NULL, 4, NULL) != pdPASS ||
+      xTaskCreate(MonitorTask, "MonitorTask", 256, NULL, 3, NULL) != pdPASS ||
       xTaskCreate(actuatorTask, "actuatorTask", 256, NULL, 2, NULL) != pdPASS)
   {
       Error_Handler();
@@ -746,7 +716,7 @@ void LoggingTask(void *argument)
                 {
                     HAL_UART_Transmit(&huart2, (uint8_t *)entry.msg,
                                       (uint16_t)strlen(entry.msg), 1000);
-                    xSemaphoreGive(logMutex);
+                    //xSemaphoreGive(logMutex);
                 }
             }
         }
@@ -789,7 +759,7 @@ void LoadCellTask(void *argument)
                      W.weight, monitoring_weight, (int)currentState);
             if (xQueueSend(LogQueue, &logMsg, 0) == pdTRUE)
             {
-                xSemaphoreGive(LogSemaphore);
+               xSemaphoreGive(LogSemaphore);
             }
         }
         else
@@ -827,7 +797,6 @@ void MonitorTask(void *argument)
                 nextStatus.level = 0;
             }
 
-            /* One consumer: overwrite the last value so it cannot go stale. */
             xQueueOverwrite(status_queue, &nextStatus);
 
             if (nextStatus.level != previousLogStatus)
@@ -880,7 +849,7 @@ void actuatorTask(void *argument)
         switch (status)
         {
             case 0: frequency = 0; break;      /* Normal: buzzer off */
-            case 1: frequency = 1000; break;   /* Running low */
+            case 1: frequency = 2000; break;   /* Running low */
             case 2: frequency = 3200; break;   /* Empty */
             default: frequency = 0; break;
         }
@@ -905,9 +874,6 @@ void actuatorTask(void *argument)
                  status, (unsigned long)frequency);
         PostLog(line);
 
-        /* Sprint 5 mutex test: actuator also writes directly to UART.
-           Both this task and LoggingTask acquire the SAME mutex.
-           This produces an extra actuator line for the test. */
         char directLine[LOG_MESSAGE_SIZE];
         snprintf(directLine, sizeof(directLine),
                  "ACTUATOR DIRECT: status=%d, buzzer=%lu Hz\r\n",
@@ -916,7 +882,7 @@ void actuatorTask(void *argument)
         {
             HAL_UART_Transmit(&huart2, (uint8_t *)directLine,
                               (uint16_t)strlen(directLine), 1000);
-            xSemaphoreGive(logMutex);
+            //xSemaphoreGive(logMutex);
         }
     }
 }
