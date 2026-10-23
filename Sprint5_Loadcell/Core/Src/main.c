@@ -808,6 +808,7 @@ void MonitorTask(void *argument)
                 previousLogStatus = nextStatus.level;
             }
         }
+
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
