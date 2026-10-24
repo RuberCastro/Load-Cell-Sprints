@@ -11,6 +11,7 @@ While beginning the project by selecting the correct board in the software will 
 It does not default to correctly configuring GPIO pins, which is necessary for LED Toggling. </n>
 o	STM32CubeIDE – After the pin was configured and the corresponding code was generated, the correct lines of code needed to be added to the while loop to run infinitely. 
 The code in the while(1) loop in Figure 1 shows a toggle of GPIO Pin 5 on Port A every 1000ms. This was done using the HAL embedded library that allows for direct interface with the GPIO pins.
+_________________________________
 Part III: Serial output
 •	Figure 1 and 2
 •	Explanation:
