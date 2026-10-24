@@ -32,4 +32,5 @@ frequency each task is called.
 
 ![Figure 1](Figure1.png)
 ![Figure 2](Figure2.png)
-
+![Figure 3](Figure3.png)
+![Figure 4](Figure4.png)
