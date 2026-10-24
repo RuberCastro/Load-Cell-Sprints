@@ -7,7 +7,7 @@ SPRINT 1
 --------------------------------
 Part II: Blink LED (baremetal)
 •	Figure 1 and 2</n>
-<n>•	Explanation:</n>
+•	Explanation:</n>
 o	STM32CubeMX – Starting the project with STM32CubeMX allows the user to configure individual pins, which was a key component of this lab. </n>
 While beginning the project by selecting the correct board in the software will configure all the correct timers, etc. </n>
 It does not default to correctly configuring GPIO pins, which is necessary for LED Toggling. </n>
@@ -30,6 +30,6 @@ o	STM32CubeIDE – After the tasks were configured and the corresponding code wa
 Again using the HAL library to do this, with each task to execute the same function (‘Toggle Pin’). **Observation** Changing priorities of the tasks create a different pattern of blinking because of the timing and 
 frequency each task is called. 
 
-![Figure 1](Figure1.png)
+!Figure 1(Figure1.png)
 ![Figure 2](Figure2.png)
 
