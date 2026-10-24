@@ -6,11 +6,11 @@ N01554102
 SPRINT 1
 --------------------------------
 Part II: Blink LED (baremetal)
-•	Figure 1 and 2
-•	Explanation:
-o	STM32CubeMX – Starting the project with STM32CubeMX allows the user to configure individual pins, which was a key component of this lab. 
-While beginning the project by selecting the correct board in the software will configure all the correct timers, etc. 
-It does not default to correctly configuring GPIO pins, which is necessary for LED Toggling. 
+•	Figure 1 and 2</n>
+•	Explanation:</n>
+o	STM32CubeMX – Starting the project with STM32CubeMX allows the user to configure individual pins, which was a key component of this lab. </n>
+While beginning the project by selecting the correct board in the software will configure all the correct timers, etc. </n>
+It does not default to correctly configuring GPIO pins, which is necessary for LED Toggling. </n>
 o	STM32CubeIDE – After the pin was configured and the corresponding code was generated, the correct lines of code needed to be added to the while loop to run infinitely. 
 The code in the while(1) loop in Figure 1 shows a toggle of GPIO Pin 5 on Port A every 1000ms. This was done using the HAL embedded library that allows for direct interface with the GPIO pins.
 Part III: Serial output
