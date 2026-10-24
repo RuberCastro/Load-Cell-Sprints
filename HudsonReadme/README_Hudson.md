@@ -29,10 +29,6 @@ o	STM32CubeIDE – After the tasks were configured and the corresponding code wa
 Again using the HAL library to do this, with each task to execute the same function (‘Toggle Pin’). **Observation** Changing priorities of the tasks create a different pattern of blinking because of the timing and 
 frequency each task is called. 
 
-![Figure 1](Figure1.png)
-![Figure 2](Figure2.png)
-![Figure 3](Figure3.png)
-![Figure 4](Figure4.png)
 
 
 --------------------------------
@@ -40,7 +36,6 @@ SPRINT 2
 --------------------------------
 Part 1A: Interface with I2C TMP3 Sensor (baremetal)
 •	Figure 5, 6 and 7
-•	Explanation:
 o	STM32CubeMX – Using a similarly configured .ioc file for this project, there is an additional configuration for the I2C peripheral. The default settings for this peripheral were sufficient, ensuring pins PB8 and PB9 were configured for the I2C SCL (Clock) and SDA (Data) communication pins respectively.
 o	STM32CubeIDE – 2 major blocks of code were needed here, one to initialize a function to read the raw I2C data from the bus (Figure 6), and one to output the temperature value to the UART (Figure 7).  
 	Figure 6 – Using the I2C Master Transmit and I2C Master Receive from the HAL library the interfacing with the I2C bus is simply a function call and specifying the I2C address of the device (0x48 << 1), and where the data is stored locally. Ensuring proper communications along the way by checking the value of “ret != HAL_OK” which would return true if there was an issue. For data conversion, the raw value is converted to 2’s compliment because it can be negative. Then converted to celsius given the resolution of the TMP3 Sensor. 
@@ -48,7 +43,6 @@ o	STM32CubeIDE – 2 major blocks of code were needed here, one to initialize a 
 ___________________________________________________
 Part 1B: Convert to FreeRTOS
 •	Figure 8, 9 and 10
-•	Explanation:
 o	STM32CubeMX – Using a similarly configured .ioc file as Part A, but including FreeRTOS.
 o	STM32CubeIDE – Manually creating the RTOS task involves using the XTaskCreate function, ensuring to include the function containing the code to execute, the task name, stack size, priority and handle. The only arguments needed for this task specifically is the function, task name, stack size and priority. Doing this allows for the an RTOS style operation of the temperature reading with task calling by the scheduler, instead of blindly running in a loop.
 ___________________________________________
@@ -59,15 +53,5 @@ o	STM32CubeIDE –
 	NAU7802.c - To properly read data from the NAU7802 (ADC for the load cell), an initialization of the chip must occur, including the user created NAU7802 file allows for a clean setup of the system in the main.c. The file starts with a specific startup routine required for the NAU7802 to operate (Figure 14), this routine performs certain operations like a device reset, powering up of the analog and digital circuit, configuring the ADC register. All done according to the datasheet fo the NAU7802. The file also predefines a function to read the raw data from NAU7802 (figure 13) utilizing the HAL library to do so. 
 	Main.c - The steps here are similar to the previous part of the sprint, using xTaskCreate to define the task (Figure 11) and the function containing the code to be executed and the function itself reading the I2C bus and printing the value on the UART (Figure 12). Also included is the ability to tare the load cell reading by using the “USER” button on the STM32 board. Also required here was a calibration value (defined in main.c as 760), this was found by assuming the load cell is linear and placing a known weight on the load cell, finding the ratio with respect to grams. 
 
-![Figure 5](Figure5.png)
-![Figure 6](Figure6.png)
-![Figure 7](Figure7.png)
-![Figure 8](Figure8.png)
-![Figure 9](Figure9.png)
-![Figure 10](Figure10.png)
-![Figure 11](Figure11.png)
-![Figure 12](Figure12.png)
-![Figure 13](Figure13.png)
-![Figure 14](Figure14.png)
-![Figure 15](Figure15.png)
+
 
