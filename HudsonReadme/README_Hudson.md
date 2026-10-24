@@ -1,11 +1,9 @@
-MENG4030 Embedded Parallel Programming Project 1 - SPRINT Summaries 
-Hudson Paquet
-N01554102
-2026/09/21 - 2026/10/23
+#MENG4030 Embedded Parallel Programming Project 1 - SPRINT Summaries 
+#Hudson Paquet N01554102 2026/09/21 - 2026/10/23
 --------------------------------
-SPRINT 1
+##SPRINT 1
 --------------------------------
-Part II: Blink LED (baremetal)
+###Part II: Blink LED (baremetal)
 •	Figure 1 and 2</n>
 •	Explanation:</n>
 o	STM32CubeMX – Starting the project with STM32CubeMX allows the user to configure individual pins, which was a key component of this lab. </n>
@@ -13,7 +11,7 @@ While beginning the project by selecting the correct board in the software will 
 It does not default to correctly configuring GPIO pins, which is necessary for LED Toggling. </n>
 o	STM32CubeIDE – After the pin was configured and the corresponding code was generated, the correct lines of code needed to be added to the while loop to run infinitely. 
 The code in the while(1) loop in Figure 1 shows a toggle of GPIO Pin 5 on Port A every 1000ms. This was done using the HAL embedded library that allows for direct interface with the GPIO pins.
-Part III: Serial output
+###Part III: Serial output
 •	Figure 1 and 2
 •	Explanation:
 o	STM32CubeMX – As mentioned, starting the project with STM32CubeMX allows the user to configure individual pins, as it does not default to correctly configuring UART pins, 
@@ -21,7 +19,7 @@ which is necessary for the serial output to occur. For this, Pin 2 on Port A was
 o	STM32CubeIDE – After the pins were configured and the corresponding code was generated, the correct lines of code needed to be added to the while loop to run infinitely. 
 Under the code that toggles the LED in the while(1) loop, is the correct structure to output the “Hello World!!!” character string seen in the serial monitoring terminal. 
 Similar to the LED toggle, the HAL library was used to transmit the string over serial communication
-Part IV: Blink LED using RTOS
+###Part IV: Blink LED using RTOS
 •	Figure 3 and 4
 •	Explanation:
 o	STM32CubeMX – Previously, CubeMX was used for configuring pins. For this, the “FreeRTOS” kernel is needed to define RTOS tasks that will handle the blinking rather than plan script in a super loop. 
