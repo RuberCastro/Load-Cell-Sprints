@@ -31,3 +31,5 @@ Again using the HAL library to do this, with each task to execute the same funct
 frequency each task is called. 
 
 ![Figure 1](Figure1.png)
+![Figure 2](Figure2.png)
+
