@@ -69,3 +69,16 @@ Part 2: Demonstrate context switching
 o	STM32CubeMX – Nothing needs to change from previous part.
 o	STM32CubeIDE – Adding the function depicted in figure 19 before the main, allows a easy visual through the UART to see the task switching in action. Displaying the active task when it switches from one to another. Serial Terminal seen in figure 20
 
+--------------------------------
+SPRINT 4
+--------------------------------
+Part 1: Multiple Queues
+•	Figures 23 - 28
+o	STM32CubeMX – No changes required from previous Sprint
+o	STM32CubeIDE – Begin with adding #include “queue.h”
+	Setting up structs: - Before queues are implemented, ideally the data is transferred using structs instead of plain variables. Even though the queues to be implemented will only be transferring one variable type. Struct definitions can be found in figure 23.
+	Setting up queues- This is done by first defining the queues using the FreeRTOS library (Seen in figures 24 and 25) first declaring the queue handles, then creating the queue declaring its number of indices and unit size. The queues can now be accessed by tasks.
+	weight_queue – This queue is intended to pass the current weight reading from the Sensor Task (Previously the LoadCellTask) to the Control Task. Seen in figure 26, the output of sensor reading is no longer going to a global variable, it is being sent into the queue (using XQueueSend). And in figure 27, it is being read into the control task (using XQueueReceive) as the received weight from the sensor and carries on with it’s control with respect to this data.
+	uart_queue – This queue is intended to pass the current weight value from the sensor task into the actuator task, this queue is providing the same output from the sensor task as “weight_queue” but will use it to print on the UART (seen in figure 26). The reason another queue is needed is because it optimizes queue access so no 2 tasks are assigned to read from the same queue. Actuator task receiving this data is seen in figure 28.
+	status_queue – This queue is intended to take the weight status from the control task and have the actuator perform a different actions depending on the status of the weight. The output data from the control task is simply an integer 0, 1 or 2 (weight OK, running low on inventory, out of stock) this queue send can be seen in figure 27. The status_queue is read in the actuator task seen in figure 28 and it can be seen that the value pulled from the queue is what is used to decide what the actuator will do (using switch case).  
+
