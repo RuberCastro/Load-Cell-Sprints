@@ -53,5 +53,19 @@ o	STM32CubeIDE –
 	NAU7802.c - To properly read data from the NAU7802 (ADC for the load cell), an initialization of the chip must occur, including the user created NAU7802 file allows for a clean setup of the system in the main.c. The file starts with a specific startup routine required for the NAU7802 to operate (Figure 14), this routine performs certain operations like a device reset, powering up of the analog and digital circuit, configuring the ADC register. All done according to the datasheet fo the NAU7802. The file also predefines a function to read the raw data from NAU7802 (figure 13) utilizing the HAL library to do so. 
 	Main.c - The steps here are similar to the previous part of the sprint, using xTaskCreate to define the task (Figure 11) and the function containing the code to be executed and the function itself reading the I2C bus and printing the value on the UART (Figure 12). Also included is the ability to tare the load cell reading by using the “USER” button on the STM32 board. Also required here was a calibration value (defined in main.c as 760), this was found by assuming the load cell is linear and placing a known weight on the load cell, finding the ratio with respect to grams. 
 
-
+--------------------------------
+SPRINT 3
+--------------------------------
+Part 1: Multiple Tasks
+•	Figures 16 - 22
+o	STM32CubeMX – Enable PA9 as a GPIO_Input
+o	STM32CubeIDE –
+	Sensor Task – This task is intended to perform the same function as made at the end of sprint 2. So it is effectively the same
+	Control Task (Figure 17) – This task is intended to take the values read from the load cell and perform a comparative operation between the read value and a set point. This set point is obtained when a user presses a button that passes +5VDC into PA9, the current weight on the load cell will be saved as the set point. From there it will compare it to the load cell value from the global variable that the sensor task uses and set a 0, 1 or 2 to another global variable indicating the current weight is in good standing, running low, or ran out. This can be interpreted as a way to monitor inventory: Well stocked (>20%), Order more(<20%), or Out of stock (<1%)
+	Actuator Task (Figure 18) – This task is intended to use the output of the Control task (the ‘weight_status’ global variable) to perform an action based on the status of the load cell. Given a 0 (Well Stocked) the buzzer will not do anything. Given a 1 (Order More) the buzzer will sound at a passive frequency. Given a 2 (Out of stock) the buzzer will sound at a alarm-like frequency indicating that the inventory is empty and needs to be refilled immediately. 
+_____________________________________
+Part 2: Demonstrate context switching
+•	Figure 20 and 21
+o	STM32CubeMX – Nothing needs to change from previous part.
+o	STM32CubeIDE – Adding the function depicted in figure 19 before the main, allows a easy visual through the UART to see the task switching in action. Displaying the active task when it switches from one to another. Serial Terminal seen in figure 20
 
