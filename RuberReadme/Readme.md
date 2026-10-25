@@ -49,7 +49,7 @@ The testing for Sprint 3 was initially performed by using an external push-butto
 --------------------------------
 SPRINT 4
 --------------------------------
-The objective of Sprint 4 was to implement communication between FreeRTOS tasks using queues instead of relying on global variables to transfer sensor and control data. Additionally, this sprint introduced our physical actuator, a buzzer controlled through a PWM signal, whose frequency changes according to the inventory status determined by the control task. This sprint was separated into 5 different sections:
+The objective of Sprint 4 was to implement communication between FreeRTOS tasks using queues instead of relying on global variables to transfer sensor and control data. Additionally, this sprint introduced our physical actuator, a buzzer controlled through a PWM signal, whose frequency changes according to the inventory status determined by the control task. This sprint was separated into 2 different sections:
 
 1. Implement FreeRTOS queues to transfer sensor measurements and control states between tasks.
 2. Configure and deploy control task using buzzer, and implement FreeRTOS queues to transfer control states between tasks.
@@ -64,7 +64,7 @@ During the initial testing, the system was configured with two queues to transfe
 SPRINT 5
 --------------------------------
 
-The objective of Sprint 5 was to implement synchronization mechanisms using FreeRTOS binary semaphores and mutexes to improve communication and resource management between tasks, and help us deal with our previous communication collision in a more optimized professional way. Building on the previous sprint's queue implementation, this sprint introduced a dedicated logging task responsible for collecting system information and transmitting it through UART while preventing multiple tasks from accessing the serial peripheral simultaneously. This Sprint was devided in two sections:
+The objective of Sprint 5 was to implement synchronization mechanisms using FreeRTOS binary semaphores and mutexes to improve communication and resource management between tasks, and help us deal with our previous communication collision in a more optimized professional way. Building on the previous sprint's queue implementation, this sprint introduced a dedicated logging task responsible for collecting system information and transmitting it through UART while preventing multiple tasks from accessing the serial peripheral simultaneously. This Sprint was devided in 2 sections:
 
 Part 1: Logging Task and Binary Semaphore
 Part 2: UART Mutex Implementation
