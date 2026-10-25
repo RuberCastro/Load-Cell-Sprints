@@ -1,0 +1,149 @@
+Weight: -562.478 g | MonitorW: -562.478 g | Button: 1
+Weight: -562.160 g | MonitorW: ÂÖ15ÿ=t´ºÂð!5ÿ3Ð!%ÿ1¥¥:3A!!ÿÆÒâú3ä!%ÿ½Weight: -562.216 g | MonitorW: -562.216 g | Button: 1
+Weight: -561.799 g | MonitorW: -561.799 g | Button: 1
+Weight: -562.178 g | MonitorW: -562.178 g | Button: 1
+Weight: -561.908 g | MonitorW: -561.908 g | Button: 1
+Weight: -561.558 g | MonitorW: -561.558 g | Button: 1
+Weight: -562.017 g | MonitorW: -562.017 g | Button: 1
+Weight: -562.153 g | MonitorW: -562.153 g | Button: 1
+Weight: -376.955 g | MonitorW: -376.955 g | Button: 1
+Weight: -25.410 g | MonitorW: -25.410 g | Button: 1
+Weight: -602.751 g | MonitorW: -602.751 g | Button: 1
+Weight: 464.048 g | MonitorW: 464.048 g | Button: 1
+Weight: -543.201 g | MonitorW: -543.201 g | Button: 1
+Weight: 0.000 g | MonitorW: 0.000 g | Button: 1
+Weight: -17.172 g | MonitorW: -17.172 g | Button: 1
+Weight: 3.851 g | MonitorW: 3.851 g | Button: 1
+Weight: 989.275 g | MonitorW: 989.275 g | Button: 1
+Weight: 2828.902 g | MonitorW: 2828.902 g | Button: 1
+Weight: 3274.513 g | MonitorW: 3274.513 g | Button: 1
+Weight: 2629.925 g | MonitorW: 2629.925 g | Button: 1
+Weight: 1006.687 g | MonitorW: 1006.687 g | Button: 1
+Weight: -23.528 g | MonitorW: -23.528 g | Button: 1
+Weight: 7.822 g | MonitorW: -23.528 g | Button: 1
+Weight: 2928.004 g | MonitorW: -23.528 g | Button: 1
+Weight: 3830.996 g | MonitorW: -23.528 g | Button: 1
+Weight: 3316.406 g | MonitorW: -23.528 g | Button: 1
+Weight: 3096.203 g | MonitorW: -23.528 g | Button: 1
+Weight: 2738.198 g | MonitorW: 2738.198 g | Button: 1
+Weight: 2437.130 g | MonitorW: 2437.130 g | Button: 1
+Weight: 4.380 g | MonitorW: 4.380 g | Button: 1
+Weight: 4.242 g | MonitorW: 4.380 g | Button: 1
+Weight: 179.692 g | MonitorW: 4.380 g | Button: 1
+Weight: 240.239 g | MonitorW: 4.380 g | Button: 1
+Weight: 2412.216 g | MonitorW: 2412.216 g | Button: 1
+Weight: 3227.108 g | MonitorW: 3227.108 g | Button: 1
+Weight: 2723.992 g | MonitorW: 2723.992 g | Button: 1
+Weight: 836.514 g | MonitorW: 836.514 g | Button: 1
+Weight: 5.484 g | MonitorW: 5.484 g | Button: 1
+Weight: 5.885 g | MonitorW: 5.885 g | Button: 1
+Weight: -8.114 g - RAN OUT
+Weight: -28.193 g - RAN OUT
+Weight: 7.398 g | MonitorW: 5.885 g | Button: 1
+Weight: 467.200 g | MonitorW: 5.885 g | Button: 1
+Weight: 8.494 g | MonitorW: 5.885 g | Button: 1
+Weight: 8.726 g | MonitorW: 5.885 g | Button: 1
+Weight: -23.946 g - RAN OUT
+Weight: 7.817 g | MonitorW: 5.885 g | Button: 1
+Weight: 8.201 g | MonitorW: 5.885 g | Button: 1
+Weight: 8.055 g | MonitorW: 5.885 g | Button: 1
+Weight: -31.265 g - RAN OUT
+Weight: 678.094 g | MonitorW: 5.885 g | Button: 1
+Weight: 2621.122 g | MonitorW: 5.885 g | Button: 1
+Weight: 2835.653 g | MonitorW: 2835.653 g | Button: 1
+Weight: 2309.877 g | MonitorW: 2309.877 g | Button: 1
+Weight: 1904.357 g | MonitorW: 1904.357 g | Button: 1
+Weight: 1780.136 g | MonitorW: 1904.357 g | Button: 1
+Weight: 1586.778 g | MonitorW: 1904.357 g | Button: 1
+Weight: 947.320 g | MonitorW: 1904.357 g | Button: 1
+Weight: -78.214 g - RAN OUT
+Weight: -14.062 g - RAN OUT
+Weight: -14.235 g - RAN OUT
+Weight: -14.041 g - RAN OUT
+Weight: -2.918 g - RAN OUT
+Weight: -23.764 g - RAN OUT
+Weight: -14.974 g - RAN OUT
+Weight: -14.786 g - RAN OUT
+Weight: -13.646 g - RAN OUT
+Weight: -13.384 g - RAN OUT
+Weight: -13.940 g - RAN OUT
+Weight: -13.833 g - RAN OUT
+Weight: -13.677 g - RAN OUT
+Weight: -13.612 g - RAN OUT
+Weight: -13.872 g - RAN OUT
+Weight: Weight: -17.392 g | MonitorW: -38.721 g | Button: 1
+Weight: -17.419 g | MonitorW: -38.721 g | Button: 1
+Weight: -17.747 g | MonitorW: -38.721 g | Button: 1
+Weight: -17.166 g | MonitorW: -38.721 g | Button: 1
+Weight: -2.685 g | MonitorW: -38.721 g | Button: 1
+Weight: 8.856 g | MonitorW: -38.721 g | Button: 1
+Weight: -557.317 g | MonitorW: 0.000 g | Button: 0
+Weight: -556.913 g | MonitorW: 0.000 g | Button: 0
+Weight: -557.081 g | MonitorW: 0.000 g | Button: 0
+Weight: -557.062 g | MonitorW: 0.000 g | Button: 0
+Weight: -557.102 g | MonitorW: 0.000 g | Button: 0Weight: -557.016 g | MonitorW: 0.000 g | Button: 0
+Weight: -556.792 g | MonitorW: 0.000 g | Button: 0
+Weight: -557.198 g | MonitorW: 0.000 g | Button: 0
+Weight: -557.300 g | MonitorW: 0.000 g | Button: 0
+Weight: -557.236 g | MonitorW: 0.000 g | Button: 0
+Weight: -544.236 g | MonitorW: 0.000 g | Button: 0
+Weight: -548.149 g | MonitorW: 0.000 g | Button: 0
+Weight: -554.224 g | MonitorW: 0.000 g | Button: 0
+Weight: 1.Weight: 1.363 g | MonitorW: 0.000 g | Button: 0
+Weight: 1.441 g | MonitorW: 0.000 g | Button: 0
+Weight: 1.227 g | MonitorW: 0.000 g | Button: 0
+Weight: 1.681 g | MonitorW: 0.000 g | Button: 0
+Weight: 2.609 g | MonitorW: 0.000 g | Button: 0
+Weight: 0.000 g | MonitorW: 0.000 g | Button: 0
+Weight: -1.105 g | MonitorW: 0.000 g | Button: 0
+Weight: -1.142 g | MonitorW: 0.000 g | Button: 0
+Weight: -1.267 g | MonitorW: 0.000 g | Button: 0
+Weight: 49.712 g | MonitorW: 0.000 g | Button: 0
+Weight: 192.408 g | MonitorW: 0.000 g | Button: 0
+Weight: 566.893 g | MonitorW: 0.000 g | Button: 0
+Weight: -901.247 g | MonitorW: -901.247 g | Button: 0
+Weight: -915.206 g | MonitorW: -915.206 g | Button: 0
+Weight: 1094.743 g | MonitorW: 1094.743 g | Button: 0
+Weight: 135.140 g | MonitorW: 135.140 g | Button: 0
+Weight: 111.692 g | MonitorW: 111.692 g | Button: 0
+Weight: 3737.693 g | MonitorW: 3737.693 g | Button: 0
+Weight: 3973.379 g | MonitorW: 3973.379 g | Button: 0
+Weight: 3303.739 g | MonitorW: 3973.379 g | Button: 0
+Weight: 3231.518 g | MonitorW: 3973.379 g | Button: 0
+Weight: 2817.985 g | MonitorW: 3973.379 g | Button: 0
+Weight: 836.382 g | MonitorW: 3973.379 g | Button: 0
+Weight: -19.697 g - RAN OUT
+Weight: 21.198 g - RAN OUT
+Weight: 21.703 g - RAN OUT
+Weight: 21.628 g - RAN OUT
+Weight: 452.572 g - RUNNING LOW
+Weight: 633.296 g - RUNNING LOW
+Weight: 529.091 g - RUNNING LOW
+Weight: 417.726 g - RUNNING LOW
+Weight: 156.288 g - RAN OUT
+Weight: 154.229 g - RAN OUT
+Weight: 513.700 g - RUNNING LOW
+Weight: 683.180 g - RUNNING LOW
+Weight: 509.956 g - RUNNING LOW
+Weight: 615.670 g - RUNNING LOW
+Weight: 268.125 g - RAN OUT
+Weight: 526.487 g - RUNNING LOW
+Weight: 85.410 g - RAN OUT
+Weight: 152.011 g - RAN OUT
+Weight: 154.318 g - RAN OUT
+Weight: 39.054 g - RAN OUT
+Weight: 871.948 g | MonitorW: 3973.379 g | Button: 0
+Weight: 1155.354 g | MonitorW: 3973.379 g | Button: 0
+Weight: 230.579 g - RAN OUT
+Weight: 123.434 g - RAN OUT
+Weight: 537.011 g - RUNNING LOW
+Weight: 549.896 g - RUNNING LOW
+Weight: 558.533 g - RUNNING LOW
+Weight: 555.575 g - RUNNING LOW
+Weight: 518.551 g - RUNNING LOW
+Weight: 496.004 g - RUNNING LOW
+Weight: 483.734 g - RUNNING LOW
+Weight: 456.797 g - RUNNING LOW
+Weight: -41.400 g - RAN OUT
+Weight: 16.197 g - RAN OUT
+Weight: -6.871 g - RAN OUT
