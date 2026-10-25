@@ -20,7 +20,7 @@ Testing and verification for this sprint was to observe the onboard LD2 LED to c
 --------------------------------
 SPRINT 2
 --------------------------------
-The objective of Sprint 2 was to gain familiarity with sensor integration, data acquisition over a communication protocol in our case I2C, and real-time data processing using FreeRTOS. This sprint was separated into 5 different sections:
+The objective of Sprint 2 was to gain familiarity with sensor integration, data acquisition over a communication protocol in our case I2C, and real-time data processing using FreeRTOS. This sprint was separated into 3 different sections:
 
 1. Read sensor documentation, to determine register configuration and required parameters needed for our application for both the temperature sensor and our load cell sensor ADC. 
 2. Implement bare metal code and an RTOS task to read sensor data and transmit the measurements through UART for monitoring, this time by manually creating them in the code and not using CubeMX to generate code for us.
