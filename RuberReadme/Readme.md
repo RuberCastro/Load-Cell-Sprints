@@ -31,3 +31,21 @@ Sprint 2 began with the integration of a basic TMP3 temperature sensor to become
 ***Testing and verification***
 
 We tested the sensors reading by appliying preassure to the load cell and observe its change through the UART port using teraterm as our visual terminal. This sprint required more documentation reading and understading what each register did in order to understand how to handle our sensor, unlike the temperature sensor which had only 2 registers to configure this new NAU sensor had about 20 parameters the could be configured. We initially tried to recive data using regualr lines of code, but soon realized that it was very unefficent and messy, hence why we created a driver to avoid having to repeat the same 10 lines over and over again. At the end, we learned about how importand documentation is and clearly appreciated the use of developing drivers to have an easier maintanable code.
+
+--------------------------------
+SPRINT 3
+--------------------------------
+The objective of Sprint 3 was to expand the previous sensor acquisition system by introducing a dedicated control task responsible for processing sensor measurements and generating control decisions based on the current system state. Additionally, this sprint focused on understanding RTOS multitasking and context switching. This sprint was separated into 2 different sections:
+
+1. Continue with previous sprint2 code and create a new control task using the manual FreeRTOS.
+2. Implement FreeRTOS context-switching diagnostics using a trace hook and UART messages to identify which task is being executed by the microcontroller.
+
+Sprint 3 began by cloning the previous sprint's project to retain the existing load-cell driver, I2C communication. Next, I introduced a new FreeRTOS task called 'MonitorTask', which acts as the control task of our system, this task processed the weight measurements acquired by 'LoadCellTask' through a shared global variable and compares them against a reference weight recorded using an external push-button. Based on this comparison, the control logic determines the current inventory status, assigning state 0 for normal operation, state 1 when the remaining weight falls below 20% of the reference value, and state 2 when it falls below 10%. In addition, I modified the existing 'sendmessagetask', the task responsable to communicate sensor reading data to UART to respond to these states, functioning as a temporary representation of the system's actuator. At this stage, instead of controlling a physical actuator, the task generated corresponding UART messages, including the current weight, "RUNNING LOW", or "RAN OUT", depending on the control decision. Laslty, I implemented a temporary 'tracetaskswitch' function and the help of RTOS middleware to capture the name of the currently scheduled task throught the same 'sendmessagetask' function using UART to visually capture the change between the scheduled task in our teraterm terminal, giving us context switching of tasks.
+
+***Testing and verification***
+
+The testing for Sprint 3 was initially performed by using an external push-button to record a reference weight for the inventory monitoring system. However, slight imbalances and fluctuations in the load-cell readings made it difficult to accurately detect the percentage thresholds. To address this issue, we added an additional push-button (On board tactile button) to tare the sensor, allowing the weight reading to be reset to zero before applying and recording a target weight. The system was then tested by applying varying amounts of pressure to the load cell to simulate changes in inventory. Since the control logic was based on percentages of the reference weight, the corresponding 20% and 10% threshold values were calculated beforehand and confirmed using Tera Term to monitor the UART output, we confirmed that the system correctly transitioned between normal operation, running low, and empty states according to the programmed percentage thresholds.
+
+--------------------------------
+SPRINT 4
+--------------------------------
